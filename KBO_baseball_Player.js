@@ -2,11 +2,11 @@ importPackage(org.jsoup);
 
 const { KakaoLinkClient } = require('kakaolink');
 
-const Kakao = new KakaoLinkClient('ad11b7ac64956b6cd8f4c9dd80caea5b', 'https://m.cafe.daum.net');
+const Kakao = new KakaoLinkClient('Your Js key', 'Your domain');
 
-Kakao.login('qkqkhih55@gmail.com', 'kjh3155711');
+Kakao.login('Your kakao email', 'Your kakao Password');
 
-const scriptName = "kbo_player";
+const scriptName = "Your_Script_Name";
 
 function responseFix(room, msg, sender, isGroupChat, replier, imageDB, packageName) {
 
@@ -37,7 +37,7 @@ try{
        recordUl = recordDiv.select("ul.list > li.item");
        rb = recordUl.select("span.sub_info");
        rbRate = recordUl.select("span.num_info");
-       isRecordText1 = rb.get(0).text();//타율or평자
+       isRecordText1 = rb.get(0).text();
        isRecordText2 = rb.get(1).text();
        isRecordText3 = rb.get(2).text();
        isRecordText4 = rb.get(3).text();
@@ -61,7 +61,7 @@ try{
    
 Kakao.sendLink(room, {
 
-    template_id: 87340, //템플릿 아이디 5자리
+    template_id: 00000, //Your template Id
 
     template_args: {
 
