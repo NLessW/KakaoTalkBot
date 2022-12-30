@@ -39,6 +39,10 @@ if(msg=="!회원가입"){
     var price = 3000;
     if(Number(c.money)>=3000){
       c.money=Number(c.money)-Number(price);
+      replier.reply("상자를 까겠습니다..");
+      java.lang.Thread.sleep(1000);
+      replier.reply("상자가 돌아가는 중...");
+    java.lang.Thread.sleep(3000);
     if(csgoBox<=1593){
       replier.reply(sender+"님께서 78.79% 확률로 파란색 스킨을 얻으셨습니다"+"("+csgoBox+")\n가격 : "+bsPrice+"원");
       c.blue=Number(c.blue)+1;
