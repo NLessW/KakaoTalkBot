@@ -1,5 +1,14 @@
 importPackage(org.jsoup);
-
+const auto = false; //true or false 자동 삭제
+const line = '━'.repeat(9);
+const Lw = '​'.repeat(500);
+const path = "/storage/emulated/0/botdata/msgRecord/log.txt";
+const fs = FileStream;
+const time = new Date();
+const form = true; //true or false 저장 메시지 출력
+if (!fs.read(path))
+   fs.write(path, "{}");
+let json = JSON.parse(fs.read(path));
 const week={
   "1":"월요일",
   "2":"화요일",
@@ -7,7 +16,7 @@ const week={
   "4":"목요일",
   "5":"금요일",
   "6":"토요일",
-  "7":"일요일"
+  "0":"일요일"
 };
 
 const kboTeam = {
@@ -31,6 +40,28 @@ const kboTeam = {
   "빙그레":"빙그레 이글스"
 };
 
+const timer = {
+  "0":"00",
+  "1":"01",
+  "2":"02",
+  "3":"03",
+  "4":"04",
+  "5":"05",
+  "6":"06",
+  "7":"07",
+  "8":"08",
+  "9":"09",
+  "10":"10",
+  "11":"11",
+  "12":"12",
+  "13":"13","14":"14","15":"15","16":"16","17":"17","18":"18","19":"19","20":"20",
+  "21":"21","22":"22","23":"23","24":"24","25":"25","26":"26","27":"27","28":"28",
+  "29":"29","30":"30","31":"31","32":"32","33":"33","34":"34","35":"35","36":"36",
+  "37":"37","38":"38","39":"39","40":"40","41":"41","42":"42","43":"43","44":"44",
+  "45":"45","46":"46","47":"47","48":"48","49":"49","50":"50","51":"51","52":"52",
+  "53":"53","54":"54","55":"55","56":"56","57":"57","58":"58","59":"59"
+};
+
 function response(room, msg, sender, isGroupChat, replier, imageDB, packageName) {
   let today = new Date();   
   let year = today.getFullYear(); // 년도
@@ -44,9 +75,18 @@ function response(room, msg, sender, isGroupChat, replier, imageDB, packageName)
   let milliseconds = today.getMilliseconds(); // 밀리초
   if(msg=="!help"){
    var title = "♤ 영동이 사용법 ♤";
-   replier.reply(title+"\n==============================\n○ 선수검색 ○\n\n!p 선수이름\n\n!p 뒤에 한칸 띄고 선수 이름을 치면 기본 성적과 함께 선수 검색이 됩니다.\n\n○ 야구순위 검색 ○\n\n!r 년도4자리\n\n!r 뒤에 한칸띄고 검색할 년도 4자리를 입력하시면 해당년도의 순위가 검색됩니다.\n\n○ 날씨 검색 ○\n\n!w 지역\n\n!w 뒤에 한칸 띄고 지역이름을 치면 해당지역의 날씨가 검색 됩니다.\n(문학은 문학동으로 검색해주세요)\n\n○ 경기 기록 검색 ○\n\n!d 0000년 00월 00일\n\n!d 뒤에 한칸 띄고 년도 월 일 을 치시면 해당 날짜의 경기 기록이 검색 됩니다. \n\n년 월 일 단위를 한 칸씩 띄워서 써주세요\n\n○코로나 검색○\n\n!코로나\n\n명령어를 친 시간을 기준으로 추가 확진자 등의 정보를 알려줍니다."); 
+   replier.reply(title+"\n==============================\n○ 선수검색 ○\n\n!p 선수이름\n\n!p 뒤에 한칸 띄고 선수 이름을 치면 기본 성적과 함께 선수 검색이 됩니다.\n\n○ 야구순위 검색 ○\n\n!r 년도4자리\n\n!r 뒤에 한칸띄고 검색할 년도 4자리를 입력하시면 해당년도의 순위가 검색됩니다.\n\n○ 날씨 검색 ○\n\n!w 지역\n\n!w 뒤에 한칸 띄고 지역이름을 치면 해당지역의 날씨가 검색 됩니다.\n(문학은 문학동으로 검색해주세요)\n\n○ 경기 기록 검색 ○\n\n!d 0000년 00월 00일\n\n!d 뒤에 한칸 띄고 년도 월 일 을 치시면 해당 날짜의 경기 기록이 검색 됩니다. \n\n년 월 일 단위를 한 칸씩 띄워서 써주세요○\n\n○ 채팅기록 ○\n\n!톡\n\n자기가 보낸 톡의 갯수를 알려줍니다\n\n○ 야구중계 ○\n\n!중계 팀이름 치시면 그 팀의 현재경기 진행 상황을 출력합니다"); 
    Log.d(year+"/"+month+"/"+date+"\n"+hours+ " : " + minutes + " : " + seconds + " : " +milliseconds + "\n" + sender + "님이 !help 사용 \n결과 : 성공");
    }
+   
+   function DateId(day){
+    try{
+      var result = week[day];
+      return result;
+    }catch(e){
+      replier.reply("서버 정보를 찾을 수 없습니다.");
+    }
+  }
 
 if (msg.startsWith("!w")) {
 isWeather = msg.slice(3);
@@ -70,14 +110,17 @@ try{
         mise = charts.get(0).select("a > span.txt").text();
         chomise = charts.get(1).select("a > span.txt").text();
         light = charts.get(2).select("a > span.txt").text();
+        
+        var a = "["+year+"."+month+"."+date+" "+ DateId(day) +"]\n"+hours+"시 "+minutes+"분 기준 " + isWeather + " 날씨 입니다.\n";
+    replier.reply(a + "--------------------------------------------------\n현재 온도 : " + tp + "\n" + updownText + "\n날씨 : " + weatherInfo + "\n체감 : " + feel + "\n습도 : " + water + "\n바람 : " + wind + "\n미세먼지 : " + mise + "\n초미세먼지 : " + chomise + "\n자외선 : " + light);
+    Log.d(year+"/"+month+"/"+date+"\n"+hours+ " : " + minutes + " : " + seconds + " : " +milliseconds + "\n" + sender + "님이 "+ isWeather +"검색 \n 결과 : 성공");
+   
     } 
+      
     }catch(e){
        replier.reply("Error!\nError Message\n"+e+"\n\nplz call 혁");
       }
-    var a = "["+year+"."+month+"."+date+" "+DateId(day)+"\n"+hours+"시 "+minutes+"분 기준 " + isWeather + " 날씨 입니다.]\n"+sender+"님 검색입니다"+"\u200b".repeat(500);
-    replier.reply(a + "\n---------------------------------\n현재 온도 : " + tp + "\n" + updownText + "\n날씨 : " + weatherInfo + "\n체감 : " + feel + "\n습도 : " + water + "\n바람 : " + wind + "\n미세먼지 : " + mise + "\n초미세먼지 : " + chomise + "\n자외선 : " + light);
-    Log.d(year+"/"+month+"/"+date+"\n"+hours+ " : " + minutes + " : " + seconds + " : " +milliseconds + "\n" + sender + "님이 "+ isWeather +"검색 \n 결과 : 성공");
-  }
+      }
   
   function DateId(day){
     try{
@@ -246,6 +289,78 @@ Log.d(year+"/"+month+"/"+date+"\n"+hours+ " : " + minutes + " : " + seconds + " 
     Log.e(year+"/"+month+"/"+date+"\n"+hours+ " : " + minutes + " : " + seconds + " : " +milliseconds + "\n" + sender + "님이 "+isYear+"년 순위검색 \n결과 : 실패\n사유\n검색 허용 범위 초과");
   }
 }
+
+if(msg=="!영동이집"){
+  replier.reply("제 집은 Github에요 :)\nhttps://github.com/NLessW/KakaoTalkBot/tree/main/WiTH");
 }
+
+if(msg=="!탈모"){
+  replier.reply("탈모를 놀리는 사람 = 정상\n탈모인 사람 = 비정상");
+}
+
+if(msg.indexOf("!중계")==0) {
+​var link = msg.substr(4);
+var data = org.jsoup.Jsoup.connect("https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=1&ie=utf8&query="+link+"+중계").get();
+var date = new Date();
+var year = 2023;
+var month = date.getMonth()+1;
+month = month >= 10 ? month : "0"+month;
+var day = date.getDate();
+day = day >= 10 ? day : "0"+day;
+​var fin = year+month+day;
+var a="[현재 " + link + " 경기 스코어" +"]"+"\n\n";
+var b="";
+var c=Number(data.select("tr.schedule_"+fin+" span.score_rgt").length);
+if (c<1) {
+                replier.reply("현재 경기가 진행중이지 않습니다.");
+            } else {
+tr=data.select("tr.schedule_"+fin);
+lft=tr.select("em.team_lft").html().split("<span")[0];
+sc=tr.select("em.txt_score").text();
+rgt=tr.select("em.team_rgt").html().split("<span")[0];
+lp=tr.select("em.team_lft>span.long>span.state").text();
+lpn=tr.select("em.team_lft>span.long>span.name").text();
+rp=tr.select("em.team_rgt>span.long>span.state").text();
+rpn=tr.select("em.team_rgt>span.long>span.name").text();
+          replier.reply(a+lft+" "+sc+" "+rgt+"\n\n"+lft + " "+lp+" "+lpn+"\n"+rgt+" "+rp+" "+rpn);
+}
+}
+
+
+
+function TimeId(t){
+    try{
+      var result = timer[t];
+      return result;
+    }catch(e){
+      replier.reply("시간을 찾을수없어요");
+    }
+  }
+  
+if (json[room] == undefined) json[room] = []; //기록
+if (msg == "!채팅기록") {
+  replier.reply('[' + room + '] 님의 채팅기록입니다.' + Lw + '\n' + line + '\n' + json[room].join('\n') + '\n');
+  return;
+}
+if (msg == "!삭제") {
+  json[room] = [];
+  replier.reply("채팅기록을 삭제하였습니다.");
+  return;
+}
+if(msg=="!톡"){
+  replier.reply(sender+"님은 총 "+ json[room].length+"번의 톡을 하셨습니다!");
+}
+if (form) {
+  json[room].push('(' + sender + ')[' + hours + ': ' + TimeId(minutes) + '] ' + msg);
+  //replier.reply('(' + sender + ')[' + time.getHours() + ': ' + time.getMinutes() + '] ' + msg);
+  return;
+}else if (!form) {
+  json[room].push('(' + sender + ') [' + hours + ': ' + TimeId(minutes) + '] ' + msg);
+  return;
+} 
+} function onStartCompile() {//백업
+  fs.write(path, JSON.stringify(json, null, 4));
+  }
+
 
    
