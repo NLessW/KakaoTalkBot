@@ -45,30 +45,37 @@ function responseFix(room, msg, sender, isGroupChat, replier, imageDB, packageNa
     }
 
  //DnF Auction Api Ffunction
-  function searchItem(itemName) {
+function searchItem(itemName) {
   try {
-    //API url
     var url = "https://api.neople.co.kr/df/auction?itemName=" + itemName + "&wordType=full&wordShort=true&limit=400&sort=unitPrice:asc&apikey=" + apiKey;
     var itemUrl = JSON.parse(Jsoup.connect(url).ignoreContentType(true).get().text());
 
-    //Item List
     if (itemUrl && itemUrl.rows && itemUrl.rows.length > 0) {
       var result = "";
       var tcount=0
-      //var maxResults = Math.min(itemUrl.rows.length,10); //If u want list only 10items
-      //Return result
+      //var maxResults = Math.min(itemUrl.rows.length,10);
       result+= "경매장 ["+itemName+"] 검색 결과\n"+allsee;
-      //Input all data list
       for (var i = 0; i < itemUrl.rows.length; i++) {
-        var infoI = itemUrl.rows[i];
-        var countFormatted = formatNumber(infoI.count);
-        var unitPriceFormatted = formatNumber(infoI.unitPrice);
-        var currentPriceFormatted = formatNumber(infoI.currentPrice);
-        result += "\n" + infoI.itemName + "\n총 " + countFormatted + "개 -> " + currentPriceFormatted + " 골드\n개당 " + unitPriceFormatted + " 골드\n"; tcount += 1;
-        }
+  var infoI = itemUrl.rows[i];
+  var countFormatted = formatNumber(infoI.count);
+  var unitPriceFormatted = formatNumber(infoI.unitPrice);
+  var currentPriceFormatted = formatNumber(infoI.currentPrice);
+  
+  if (infoI.upgrade != 0 && infoI.itemTypeDetail == "전문직업 재료") {
+    result += "\n" + infoI.itemName + "\n업그레이드: " + infoI.upgrade + "단계\n총 " + countFormatted + "개 -> " + currentPriceFormatted + " 골드\n개당 " + unitPriceFormatted + " 골드\n";
+    tcount += 1;
+  } else if (infoI.reinforce != 0) {
+    result += "\n+" + infoI.reinforce + " " + infoI.itemName + "\n총 " + countFormatted + "개 -> " + currentPriceFormatted + " 골드\n개당 " + unitPriceFormatted + " 골드\n";
+    tcount += 1;
+  } else {
+    result += "\n" + infoI.itemName + "\n총 " + countFormatted + "개 -> " + currentPriceFormatted + " 골드\n개당 " + unitPriceFormatted + " 골드\n";
+    tcount += 1;
+  }
+}
+return result + "\n\n조회 결과: " + tcount + "개"; // 결과 반환
+      
       return result+"\n\n조회 결과 : "+tcount+"개"; // 결과 반환
     } else {
-      //Http ErrorCode
       var responseCode = Jsoup.connect(url).ignoreContentType(true).execute().statusCode();
       var eText="";
       if (responseCode==200){
@@ -86,15 +93,14 @@ function responseFix(room, msg, sender, isGroupChat, replier, imageDB, packageNa
       }
       return "찾을 수 없습니다. (HTTP 오류 코드: " + responseCode + ")\n오류 코드 정보 : "+eText;
     }
-  } //if had error
-  catch (e) {
+  } catch (e) {
     return e;
   }
 }
-//1000→1,000
+
 function formatNumber(number) {
   return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-          }
+}
   //Input item name 
   if(msg.startsWith("!경매 ")){
   var it = msg.substr(4);
