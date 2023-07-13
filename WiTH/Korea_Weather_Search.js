@@ -19,26 +19,27 @@ let milliseconds = today.getMilliseconds(); // 밀리초
 if (msg.startsWith("!w")) {
 isWeather = msg.slice(3);
 
+if (msg.startsWith("!w")) {
+isWeather = msg.slice(3);
+
 try{
-    doc = Jsoup.connect("https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=" + isWeather +" 날씨").userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36") .get();
-    section = doc.select("section.cs_weather_new");
+    doc = Jsoup.connect("https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=" + isWeather +" 날씨").userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36").get();
+    section=doc.select("body");
     if(!section.isEmpty()){
-        region = doc.select("div.title_area > h2.title").text();
-        temp = doc.select("div._today > div.weather_graphic > div.temperature_text > strong").text();
-        tp = temp.replace("현재 온도", "");
-        tempInfo = doc.select("div._today div.temperature_info");
-        updown = tempInfo.select("p.summary > span.temperature").text();
-        updownText = "어제보다 " + updown;
-        weatherInfo = tempInfo.select("p.summary > span.weather").text();
-        dd = tempInfo.select("dl.summary_list > dd");
-        feel = dd.get(0).text();
-        water = dd.get(1).text();
-        wind = dd.get(2).text();
-        charts = doc.select("ul.today_chart_list > li.item_today");
-        mise = charts.get(0).select("a > span.txt").text();
-        chomise = charts.get(1).select("a > span.txt").text();
-        light = charts.get(2).select("a > span.txt").text();
-    } 
+      divS=section.select("div.weather_info");
+      nowTemp = divS.select("div._today>div>div.temperature_text").text().split("현재 온도")[1];
+      updown = divS.select("div._today>div.temperature_info").text().split("요")[0]+"요";
+      weather = divS.select("div._today>div.temperature_info").text().split("요")[1].split(" ")[1];
+      feelTemp = divS.select("div._today>div.temperature_info").text().split("요")[1].split(" ")[3];
+      water = divS.select("div._today>div.temperature_info").text().split("습도")[1].split(" ")[1];
+      windLocate = divS.select("div._today>div.temperature_info").text().split("습도")[1].split(" ")[2];
+      windSpeed = divS.select("div._today>div.temperature_info").text().split("습도")[1].split(" ")[3];
+      microdust = divS.select("div.report_card_wrap>ul>li").get(0).select("span").text();
+      nanoMicrodust = divS.select("div.report_card_wrap>ul>li").get(1).select("span").text();
+      uvLight=divS.select("div.report_card_wrap>ul>li").get(2).select("span").text();
+      var a = "["+year+"."+month+"."+date+" "+ DateId(day) +"]\n"+hours+"시 "+minutes+"분 기준 " + isWeather + " 날씨 입니다.\n";
+      replier.reply(a + "--------------------------------------------------\n현재 온도 : "+nowTemp +"\n"+updown+"\n날씨 : "+weather +"\n체감 : "+feelTemp+"\n습도 : "+water+"\n바람 : "+windLocate +" "+windSpeed+"\n미세먼지 : "+microdust+"\n초미세먼지 : "+nanoMicrodust+"\n자외선 : "+uvLight);
+    }
     }catch(e){
        replier.reply("Error!\nError Message\n"+e+"\n\nplz call 혁");
       }
