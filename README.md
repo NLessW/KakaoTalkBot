@@ -1,6 +1,6 @@
 # 카카오톡 봇
 
-![KakaoTalk Bot](https://example.com/bot-image.png)
+![KakaoTalk Bot](https://img.freepik.com/premium-vector/chatbot-icon-concept-chat-bot-or-chatterbot-robot-virtual-assistance-of-website_123447-1615.jpg)
 
 > 플레이스토어에 있는 메신저봇을 활용한 카카오톡 봇입니다.
 
