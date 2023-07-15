@@ -33,18 +33,19 @@
 
 ## 라이선스
 
-이 프로젝트는 MIT 라이선스 하에 배포됩니다. 자세한 정보는 [LICENSE](LICENSE) 파일을 참조하세요.
+이 프로젝트는 MIT 라이선스 하에 배포됩니다.<br/>
+자세한 정보는 [LICENSE](LICENSE) 파일을 참조하세요.
 
 ## 기여
 
-이 프로젝트에 관심을 가지고 기여하고 싶다면, 언제든지 환영합니다.
+이 프로젝트에 관심을 가지고 기여하고 싶다면, 언제든지 환영합니다.<br/>
 버그 리포트, 기능 제안, 코드 개선 등을 포함한 다양한 형태를 기대합니다.
 
 ## 설명
-CSGO - Valve 제작 CounterStrike:Global Offensive의 미니게임과 시뮬레이션 기능입니다.
-Dungeon_And_Fighter - Neople API를 이용한 캐릭터 검색 및 경매장 검색입니다.
-Naver_Api - Naver Api를 이용한 기능들입니다. 현재 Papago만 존재합니다.
-WiTH - 키움히어로즈 톡에서 사용하는 봇의 기능들입니다.각각 파트별로 나눠 참고하기 쉽게 하였습니다.
+CSGO - Valve 제작 CounterStrike:Global Offensive 미니게임과 시뮬레이션 기능입니다.<br/>
+Dungeon_And_Fighter - Neople API를 이용한 캐릭터 검색 및 경매장 검색입니다.<br/>
+Naver_Api - Naver Api를 이용한 기능들입니다. 현재 Papago만 존재합니다.<br/>
+WiTH - 키움히어로즈 톡에서 사용하는 봇의 기능들입니다.각각 파트별로 나눠 참고하기 쉽게 하였습니다.<br/>
 
 
 ## 문의
