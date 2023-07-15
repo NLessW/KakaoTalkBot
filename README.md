@@ -1,6 +1,6 @@
 # 카카오톡 봇
 
-<img src="https://play-lh.googleusercontent.com/I5QjPGUfiYmHcMqmKdIPj7AOIIADGsMcSV_eibFPUxjPUDq1R_7cDycJ7kevpi862w" width="400" alt="KakaoTalk Bot">
+<img src="https://play-lh.googleusercontent.com/I5QjPGUfiYmHcMqmKdIPj7AOIIADGsMcSV_eibFPUxjPUDq1R_7cDycJ7kevpi862w" width="300" alt="KakaoTalk Bot">
 
 > 플레이스토어에 있는 메신저봇을 활용한 카카오톡 봇입니다.
 
