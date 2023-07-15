@@ -3,7 +3,7 @@
 <img src="https://play-lh.googleusercontent.com/I5QjPGUfiYmHcMqmKdIPj7AOIIADGsMcSV_eibFPUxjPUDq1R_7cDycJ7kevpi862w" width="300" alt="KakaoTalk Bot">
 
 > 플레이스토어에 있는 메신저봇을 활용한 카카오톡 봇입니다.
-
+> 위 이미지 출처는 플레이스토어 메신저봇 앱의 아이콘입니다.
 ## 소개
 
 이 프로젝트는 플레이스토어 메신저봇을 사용하여 만든 카카오톡 봇입니다.
