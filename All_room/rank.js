@@ -59,11 +59,6 @@ function responseFix(room, msg, sender, isGroupChat, replier, imageDB, packageNa
 
     if (msg == "!톡") {
         let count = json[room][uid][sender].length;
-        if (uid === specialUserTofu_uid) {
-            count += tofu_additionalCount;
-        }else if(uid==masterUid){
-          count+=masterCount;
-        }
         replier.reply(sender + "님은 총 " + count + "번의 톡을 하셨습니다!");
         return;
     }
@@ -83,11 +78,6 @@ function responseFix(room, msg, sender, isGroupChat, replier, imageDB, packageNa
         Object.keys(json[room]).forEach(userUid => {
             Object.keys(json[room][userUid]).forEach(userSender => {
                 let count = json[room][userUid][userSender].length;
-                if (userUid === specialUserTofu_uid) {
-                    count += tofu_additionalCount;
-                }else if(userUid === masterUid){ 
-                  count += masterCount;
-                }
                 let lastMsg = json[room][userUid][userSender][json[room][userUid][userSender].length - 1];
                 rankings.push({ sender: userSender, count: count, lastMsg: lastMsg ? lastMsg.msg : "메시지 없음" });
             });
