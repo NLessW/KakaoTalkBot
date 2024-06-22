@@ -99,7 +99,7 @@ function responseFix(room, msg, sender, isGroupChat, replier, imageDB, packageNa
 
         replier.reply(replyMsg);
     }
-  }
+  
   
     const today = new Date();
     const year = today.getFullYear();
@@ -116,8 +116,8 @@ function responseFix(room, msg, sender, isGroupChat, replier, imageDB, packageNa
     });
 
     fs.write(path, JSON.stringify(json, null, 4));
-
 }
+
 function onNotificationPosted(sbn, sm) {
     var packageName = sbn.getPackageName();
     if (!packageName.startsWith("com.kakao.tal"))
