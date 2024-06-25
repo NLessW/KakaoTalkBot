@@ -57,11 +57,36 @@ function responseFix(room, msg, sender, isGroupChat, replier, imageDB, packageNa
         return;
     }
 
-    if (msg == "!톡") {
-        let count = json[room][uid][sender].length;
-        replier.reply(sender + "님은 총 " + count + "번의 톡을 하셨습니다!");
-        return;
+    if (msg === "!톡") {
+    let count = json[room][uid][sender].length;
+        if (uid === specialUserTofu_uid) {
+            count += tofu_additionalCount;
+        } else if (uid === masterUid) {
+        count += masterCount;
     }
+    // 채팅 순위 계산
+    let rankings = [];
+    Object.keys(json[room]).forEach(userUid => {
+        Object.keys(json[room][userUid]).forEach(userSender => {
+            let userCount = json[room][userUid][userSender].length;
+            rankings.push({ sender: userSender, count: userCount });
+        });
+    });
+
+    rankings.sort((a, b) => b.count - a.count);
+    let rank = rankings.findIndex(r => r.sender === sender) + 1;
+    let gap = rank > 1 ? rankings[rank - 2].count - count : (rank === 1 && rankings.length > 1 ? count - rankings[1].count : 0); // 내 앞순위와의 격차 계산 또는 1위일 경우 2위와의 격차 계산
+
+    let replyMessage = sender + "님은 총 " + count + "번의 톡을 하셨습니다!\n(현재 " + rank + "위)";
+    if (rank === 1 && rankings.length > 1) {
+        replyMessage += "\n2위 (" + rankings[1].sender + ")와 " + gap + "회 차이로 1위 유지중입니다!";
+    } else if (rank > 1) {
+        replyMessage += "\n" + (rank - 1) + "위 (" + rankings[rank - 2].sender + ")와 " + gap + "번 차이입니다!";
+    }
+
+    replier.reply(replyMessage);
+    return;
+}
 
     if (msg == "!전체삭제") {
       if(uid==masterUid){
