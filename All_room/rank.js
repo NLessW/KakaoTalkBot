@@ -6,7 +6,7 @@ if (!fs.read(path)) {
     fs.write(path, "{}");
 }
 
-let json = JSON.parse(fs.read(path));
+let json = JSON.parse(fs.read(path) || "{}");
 const masterUid = "Your_UID";
 const timer = {
     "0": "00", "1": "01", "2": "02", "3": "03", "4": "04", "5": "05", "6": "06", "7": "07", "8": "08", "9": "09",
@@ -18,11 +18,13 @@ const timer = {
 };
 
 function responseFix(room, msg, sender, isGroupChat, replier, imageDB, packageName, userId, uid) {
-  if(msg=="!명령어"){
-    var a = "!톡\n\n자기가 보낸 톡의 갯수를 알려줍니다\n\n!카톡순위\n\n현재 방의 채팅 순위를 보여줍니다";
-    var title = "명령어 사용법\n\n";
-    replier.reply(a+title);
-  }
+    if (msg == "!명령어") {
+        var a = "!톡\n\n자기가 보낸 톡의 갯수를 알려줍니다\n\n!카톡순위\n\n현재 방의 채팅 순위를 보여줍니다";
+        var title = "명령어 사용법\n\n";
+        replier.reply(a + title);
+        return;
+    }
+
     function TimeId(t) {
         try {
             return timer[t];
@@ -45,7 +47,7 @@ function responseFix(room, msg, sender, isGroupChat, replier, imageDB, packageNa
             });
         }
     });
-    
+
     if (msg == "!채팅기록") {
         replier.reply('[' + sender + '] 님의 채팅기록입니다.' + allsee + '\n\n' + json[room][uid][sender].map(entry => entry.msg).join('\n') + '\n');
         return;
@@ -58,44 +60,40 @@ function responseFix(room, msg, sender, isGroupChat, replier, imageDB, packageNa
     }
 
     if (msg === "!톡") {
-    let count = json[room][uid][sender].length;
-        if (uid === specialUserTofu_uid) {
-            count += tofu_additionalCount;
-        } else if (uid === masterUid) {
-        count += masterCount;
-    }
-    // 채팅 순위 계산
-    let rankings = [];
-    Object.keys(json[room]).forEach(userUid => {
-        Object.keys(json[room][userUid]).forEach(userSender => {
-            let userCount = json[room][userUid][userSender].length;
-            rankings.push({ sender: userSender, count: userCount });
+        let count = json[room][uid][sender].length;
+
+        // 채팅 순위 계산
+        let rankings = [];
+        Object.keys(json[room]).forEach(userUid => {
+            Object.keys(json[room][userUid]).forEach(userSender => {
+                let userCount = json[room][userUid][userSender].length;
+                rankings.push({ sender: userSender, count: userCount });
+            });
         });
-    });
 
-    rankings.sort((a, b) => b.count - a.count);
-    let rank = rankings.findIndex(r => r.sender === sender) + 1;
-    let gap = rank > 1 ? rankings[rank - 2].count - count : (rank === 1 && rankings.length > 1 ? count - rankings[1].count : 0); // 내 앞순위와의 격차 계산 또는 1위일 경우 2위와의 격차 계산
+        rankings.sort((a, b) => b.count - a.count);
+        let rank = rankings.findIndex(r => r.sender === sender) + 1;
+        let gap = rank > 1 ? rankings[rank - 2].count - count : (rank === 1 && rankings.length > 1 ? count - rankings[1].count : 0); // 내 앞순위와의 격차 계산 또는 1위일 경우 2위와의 격차 계산
 
-    let replyMessage = sender + "님은 총 " + count + "번의 톡을 하셨습니다!\n(현재 " + rank + "위)";
-    if (rank === 1 && rankings.length > 1) {
-        replyMessage += "\n2위 (" + rankings[1].sender + ")와 " + gap + "회 차이로 1위 유지중입니다!";
-    } else if (rank > 1) {
-        replyMessage += "\n" + (rank - 1) + "위 (" + rankings[rank - 2].sender + ")와 " + gap + "번 차이입니다!";
+        let replyMessage = sender + "님은 총 " + count + "번의 톡을 하셨습니다!\n(현재 " + rank + "위)";
+        if (rank === 1 && rankings.length > 1) {
+            replyMessage += "\n2위 (" + rankings[1].sender + ")와 " + gap + "회 차이로 1위 유지중입니다!";
+        } else if (rank > 1) {
+            replyMessage += "\n" + (rank - 1) + "위 (" + rankings[rank - 2].sender + ")와 " + gap + "번 차이입니다!";
+        }
+
+        replier.reply(replyMessage);
+        return;
     }
-
-    replier.reply(replyMessage);
-    return;
-}
 
     if (msg == "!전체삭제") {
-      if(uid==masterUid){
-        json = {};
-        return;
-        replier.reply("삭제완료");
-        }else{
-          replier.reply("관리자만 사용가능합니다");
+        if (uid == masterUid) {
+            json = {};
+            replier.reply("삭제완료");
+        } else {
+            replier.reply("관리자만 사용가능합니다");
         }
+        return;
     }
 
     if (msg == "!카톡순위") {
@@ -109,13 +107,13 @@ function responseFix(room, msg, sender, isGroupChat, replier, imageDB, packageNa
         });
 
         rankings.sort((a, b) => b.count - a.count);
-      let replyMsg = "[" + room + "] 방의 채팅 순위" + allsee + "\n\n";
+        let replyMsg = "[" + room + "] 방의 채팅 순위" + allsee + "\n\n";
         rankings.forEach((rank, index) => {
             if (index == 0) {
                 replyMsg += "🥇 " + (index + 1) + "위 🥇 " + rank.sender + " / 총 " + rank.count + " 회\n마지막 카톡 : " + rank.lastMsg + "\n\n";
             } else if (index == 1) {
                 replyMsg += "🥈 " + (index + 1) + "위 🥈 " + rank.sender + " / 총 " + rank.count + " 회\n마지막 카톡 : " + rank.lastMsg + "\n\n";
-            } else if (index == 2){
+            } else if (index == 2) {
                 replyMsg += "🥉 " + (index + 1) + "위 🥉 " + rank.sender + " / 총 " + rank.count + " 회\n마지막 카톡 : " + rank.lastMsg + "\n\n";
             } else {
                 replyMsg += (index + 1) + "위 " + rank.sender + " / 총 " + rank.count + " 회\n마지막 카톡: " + rank.lastMsg + "\n\n";
@@ -123,9 +121,9 @@ function responseFix(room, msg, sender, isGroupChat, replier, imageDB, packageNa
         });
 
         replier.reply(replyMsg);
+        return;
     }
-  
-  
+
     const today = new Date();
     const year = today.getFullYear();
     const month = today.getMonth() + 1;
@@ -133,9 +131,9 @@ function responseFix(room, msg, sender, isGroupChat, replier, imageDB, packageNa
     const hours = today.getHours();
     const minutes = today.getMinutes();
     const seconds = today.getSeconds();
-    
+
     const timestamp = '[' + year + '년 ' + month + '월 ' + date + '일 ' + hours + ' : ' + TimeId(minutes) + ' : ' + seconds + '] ' + msg;
-    
+
     json[room][uid][sender].push({
         msg: timestamp
     });
@@ -174,4 +172,4 @@ function onNotificationPosted(sbn, sm) {
         }
     }
 }
-                
+    
