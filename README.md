@@ -46,7 +46,8 @@ CSGO - Valve 제작 CounterStrike:Global Offensive 미니게임과 시뮬레이�
 Dungeon_And_Fighter - Neople API를 이용한 캐릭터 검색 및 경매장 검색입니다.<br/>
 Naver_Api - Naver Api를 이용한 기능들입니다. 현재 Papago만 존재합니다.<br/>
 WiTH - 키움히어로즈 톡에서 사용하는 봇의 기능들입니다.각각 파트별로 나눠 참고하기 쉽게 하였습니다.<br/>
-
+All_Room - 모든 방의 공동 기능을 넣어놨습니다. 현재 카톡순위 기능만 제공됩니다.
+<br/>
 
 ## 문의
 
