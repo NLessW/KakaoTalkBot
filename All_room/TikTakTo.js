@@ -1,7 +1,7 @@
 const Stone = '⬜';
 const P_Stone = '⚫';
 const B_Stone = '✖';
-const path = "/storage/emulated/0/botdata/tiktakto/userInfo.json";
+const path = "Your_Path";
 const allsee = "\u200b".repeat(500);
 
 let T3 = {
