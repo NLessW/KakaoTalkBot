@@ -32,7 +32,9 @@ function responseFix(room, msg, sender, isGroupChat, replier, imageDB, packageNa
             replier.reply("시간을 찾을 수 없어요");
         }
     }
-
+    function formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
     if (!json[room]) json[room] = {};
     if (!json[room][uid]) json[room][uid] = {};
     if (!json[room][uid][sender]) json[room][uid][sender] = [];
@@ -98,30 +100,31 @@ function responseFix(room, msg, sender, isGroupChat, replier, imageDB, packageNa
 
     if (msg == "!카톡순위") {
         let rankings = [];
+        let totalCount = 0;
+    
         Object.keys(json[room]).forEach(userUid => {
             Object.keys(json[room][userUid]).forEach(userSender => {
                 let count = json[room][userUid][userSender].length;
+                totalCount += count;
                 let lastMsg = json[room][userUid][userSender][json[room][userUid][userSender].length - 1];
                 rankings.push({ sender: userSender, count: count, lastMsg: lastMsg ? lastMsg.msg : "메시지 없음" });
             });
         });
-
         rankings.sort((a, b) => b.count - a.count);
-        let replyMsg = "[" + room + "] 방의 채팅 순위" + allsee + "\n\n";
+        let replyMsg = "[" + room + "] 방의 채팅 순위" + allsee + "\n\n전체 : " + formatNumber(totalCount) + " 회\n\n";
         rankings.forEach((rank, index) => {
+            const percentage = ((rank.count / totalCount) * 100).toFixed(2);
             if (index == 0) {
-                replyMsg += "🥇 " + (index + 1) + "위 🥇 " + rank.sender + " / 총 " + rank.count + " 회\n마지막 카톡 : " + rank.lastMsg + "\n\n";
+                replyMsg += "🥇 " + (index + 1) + "위 🥇 " + rank.sender + "\n마지막 카톡 : " + rank.lastMsg + "\n  - 카톡 수 : " + formatNumber(rank.count) + " 회\n  - 비율 : " + percentage + " %\n\n";
             } else if (index == 1) {
-                replyMsg += "🥈 " + (index + 1) + "위 🥈 " + rank.sender + " / 총 " + rank.count + " 회\n마지막 카톡 : " + rank.lastMsg + "\n\n";
+                replyMsg += "🥈 " + (index + 1) + "위 🥈 " + rank.sender + "\n마지막 카톡 : " + rank.lastMsg + "\n  - 카톡 수 : " + formatNumber(rank.count) + " 회\n  - 비율 : " + percentage + " %\n\n";
             } else if (index == 2) {
-                replyMsg += "🥉 " + (index + 1) + "위 🥉 " + rank.sender + " / 총 " + rank.count + " 회\n마지막 카톡 : " + rank.lastMsg + "\n\n";
+                replyMsg += "🥉 " + (index + 1) + "위 🥉 " + rank.sender + "\n마지막 카톡 : " + rank.lastMsg + "\n  - 카톡 수 : " + formatNumber(rank.count) + " 회\n  - 비율 : " + percentage + " %\n\n";
             } else {
-                replyMsg += (index + 1) + "위 " + rank.sender + " / 총 " + rank.count + " 회\n마지막 카톡: " + rank.lastMsg + "\n\n";
+                replyMsg += (index + 1) + "위 " + rank.sender + "\n마지막 카톡: " + rank.lastMsg + "\n  - 카톡 수 : " + formatNumber(rank.count) + " 회\n  - 비율 : " + percentage + " %\n\n";
             }
         });
-
         replier.reply(replyMsg);
-        return;
     }
 
     const today = new Date();
