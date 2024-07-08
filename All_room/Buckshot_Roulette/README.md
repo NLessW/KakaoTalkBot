@@ -29,8 +29,9 @@
 
 
 ## 클래스 다이어그램
+![1720466642746.jpg](https://github.com/NLessW/KakaoTalkBot/assets/63160418/b974f907-5031-474a-9675-c31ffdf9b0da)
 
-클래스 다이어그램은 `classdiagram.html` 파일에서 확인할 수 있습니다. 이 파일을 웹 브라우저에서 열어 다이어그램을 볼 수 있습니다.
+
 
 ## 추가 정보
 
