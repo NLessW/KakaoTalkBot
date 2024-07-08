@@ -24,7 +24,8 @@
 | UC-08 | 게임 중단 | 플레이어 | 게임 중간 종료 | 게임 진행중 | 현재 상태 저장, 게임 종료 |
 
 ## 유스케이스 다이어그램
-![1720466642746.jpg](https://github.com/NLessW/KakaoTalkBot/assets/63160418/b974f907-5031-474a-9675-c31ffdf9b0da)
+![1720466457578.jpg](https://github.com/NLessW/KakaoTalkBot/assets/63160418/d879d174-cad0-414f-a95e-57fa930fb1de)
+
 
 
 
