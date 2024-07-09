@@ -1,4 +1,4 @@
-![제목 없는 다이어그램 drawio (2)](https://github.com/NLessW/KakaoTalkBot/assets/63160418/536a8504-45af-4171-b2c6-860d1081dc86)# Buck Shot Roulette 게임 프로젝트
+# Buck Shot Roulette 게임 프로젝트
 
 이 프로젝트는 Buck Shot Roulette 게임의 분석과 설계 문서를 포함하며, 메신저 봇에서 구현합니다.
 
