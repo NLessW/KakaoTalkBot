@@ -356,11 +356,22 @@ function response(room, msg, sender, isGroupChat, replier, ImageDB, packageName)
             if ("bufferRankingAll" in json) {
                 var buffScoreItem = json.buffCal.find(e => e.hasOwnProperty('buffScore'));
                 var buffScore = buffScoreItem ? buffScoreItem.buffScore : null;
+                var buffScore30LvItem = json.buffCal.find(e => e.hasOwnProperty('30LvBuffScore'));
+                var buffScore3PItem = json.buffCal.find(e => e.hasOwnProperty('3PBuffScore'));
                 var buffScore4PItem = json.buffCal.find(e => e.hasOwnProperty('4PBuffScore'));
-                var buffScore4P = buffScore4PItem ? buffScore4PItem['4PBuffScore'] : null;
+                
                 defaultInfo += "[ " + characterName + " ] 님의 정보\n" +
-                "\n종합 버프력 : " + buffScore + "점" +
-                "\n 30Lv 점수 : " + buffScore4P + "점"+allsee;
+                "\n종합 버프력 : " + buffScore + "점";
+                
+                if (buffScore30LvItem) {
+                    defaultInfo += "\n30Lv 점수 : " + buffScore30LvItem['30LvBuffScore'] + "점";
+                } else if (buffScore3PItem && buffScore4PItem) {
+                    defaultInfo += "\n3인 점수 : " + buffScore3PItem['3PBuffScore'] + "점" +
+                                   "\n4인 점수 : " + buffScore4PItem['4PBuffScore'] + "점";
+                }
+                
+                defaultInfo += allsee;
+                
                 if (buffScore !== null) {
                     var dataToAdd = {
                         characterName: characterName,
