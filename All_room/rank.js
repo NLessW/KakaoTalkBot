@@ -144,6 +144,95 @@ function responseFix(room, msg, sender, isGroupChat, replier, imageDB, packageNa
     fs.write(path, JSON.stringify(json, null, 4));
 }
 
+if (msg === "!잠수정리") {
+    if (uid === masterUid) {
+        let deletedCount = 0;
+        let inactiveUsers = 0;
+        
+        if (json[room]) {
+            let usersToDelete = [];
+            for (let userUid in json[room]) {
+                let lastMessageDate = null;
+                
+                for (let sender in json[room][userUid]) {
+                    let messages = json[room][userUid][sender];
+                    if (messages.length > 0) {
+                        let lastMsg = messages[messages.length - 1].msg;
+                        let msgDate = lastMsg.match(/\[(\d{4})년 (\d{1,2})월 (\d{1,2})일/);
+                        if (msgDate) {
+                            let messageDate = new Date(msgDate[1], msgDate[2] - 1, msgDate[3]);
+                            if (!lastMessageDate || messageDate > lastMessageDate) {
+                                lastMessageDate = messageDate;
+                            }
+                        }
+                    }
+                }
+                
+                if (lastMessageDate) {
+                    let diffDays = (today - lastMessageDate) / (1000 * 60 * 60 * 24);
+                    if (diffDays > 3) {  // 3일 이상 inactive로 변경
+                        usersToDelete.push(userUid);
+                        for (let sender in json[room][userUid]) {
+                            deletedCount += json[room][userUid][sender].length;
+                        }
+                        inactiveUsers++;
+                    }
+                }
+            }
+            
+            usersToDelete.forEach(userUid => {
+                delete json[room][userUid];
+            });
+            
+            fs.write(path, JSON.stringify(json, null, 4));
+            replier.reply("잠수자 정리가 완료되었습니다.\n" +
+                          "총 " + inactiveUsers + "명의 잠수 유저가 발견되었으며,\n" +
+                          deletedCount + "개의 메시지가 삭제되었습니다.");
+        } else {
+            replier.reply("이 방의 채팅 기록이 없습니다.");
+        }
+    } else {
+        replier.reply("관리자만 사용 가능합니다.");
+    }
+}
+
+if (msg === "!방초기화") {
+    if (uid === masterUid) {
+        let count = 0;
+        if (json[room]) {
+            for (let userId in json[room]) {
+                for (let sender in json[room][userId]) {
+                    count += json[room][userId][sender].length;
+                }
+            }
+        }
+        json[room] = {};
+        fs.write(path, JSON.stringify(json, null, 4));
+        replier.reply(room + "의 대화 내용이 초기화 되었습니다\n총 삭제 : " + formatNumber(count) +" 개의 대화 내용이 삭제되었습니다.");
+    } else {
+        replier.reply("관리자만 사용가능합니다.");
+    }
+}
+
+if (msg === "!저장해제") {
+        if (uid === masterUid) {
+            if (!json.ignoredRooms) {
+                json.ignoredRooms = [];
+            }
+            if (!json.ignoredRooms.includes(room)) {
+                json.ignoredRooms.push(room);
+                fs.write(path, JSON.stringify(json, null, 4));
+                replier.reply("이 방의 메시지 저장이 중지되었습니다.");
+            } else {
+                replier.reply("이 방은 이미 메시지 저장이 중지된 상태입니다.");
+            }
+        } else {
+            replier.reply("관리자만 사용 가능합니다.");
+        }
+        return;
+    }
+    
+}
 function onNotificationPosted(sbn, sm) {
     var packageName = sbn.getPackageName();
     if (!packageName.startsWith("com.kakao.tal"))
