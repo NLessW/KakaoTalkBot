@@ -2,12 +2,13 @@ const path = "/storage/emulated/0/botdata/msgRecord/log.json";
 const fs = FileStream;
 const form = true; // true or false 저장 메시지 출력
 const allsee = "\u200b".repeat(500);
+
 if (!fs.read(path)) {
     fs.write(path, "{}");
 }
 
 let json = JSON.parse(fs.read(path) || "{}");
-const masterUid = "Your_UID";
+const masterUid = "f1635e3e71aa9a32024e131fedff6b9b6a6cda2aa9049cf3a91cecaca1385b88";
 const timer = {
     "0": "00", "1": "01", "2": "02", "3": "03", "4": "04", "5": "05", "6": "06", "7": "07", "8": "08", "9": "09",
     "10": "10", "11": "11", "12": "12", "13": "13", "14": "14", "15": "15", "16": "16", "17": "17", "18": "18", "19": "19", "20": "20",
@@ -32,9 +33,11 @@ function responseFix(room, msg, sender, isGroupChat, replier, imageDB, packageNa
             replier.reply("시간을 찾을 수 없어요");
         }
     }
+
     function formatNumber(num) {
         return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
+
     if (!json[room]) json[room] = {};
     if (!json[room][uid]) json[room][uid] = {};
     if (!json[room][uid][sender]) json[room][uid][sender] = [];
@@ -52,13 +55,11 @@ function responseFix(room, msg, sender, isGroupChat, replier, imageDB, packageNa
 
     if (msg == "!채팅기록") {
         replier.reply('[' + sender + '] 님의 채팅기록입니다.' + allsee + '\n\n' + json[room][uid][sender].map(entry => entry.msg).join('\n') + '\n');
-        return;
     }
 
     if (msg == "!삭제") {
         json[room][uid][sender] = [];
         replier.reply("채팅기록을 삭제하였습니다.");
-        return;
     }
 
     if (msg === "!톡") {
@@ -75,7 +76,7 @@ function responseFix(room, msg, sender, isGroupChat, replier, imageDB, packageNa
 
         rankings.sort((a, b) => b.count - a.count);
         let rank = rankings.findIndex(r => r.sender === sender) + 1;
-        let gap = rank > 1 ? rankings[rank - 2].count - count : (rank === 1 && rankings.length > 1 ? count - rankings[1].count : 0); // 내 앞순위와의 격차 계산 또는 1위일 경우 2위와의 격차 계산
+        let gap = rank > 1 ? rankings[rank - 2].count - count : (rank === 1 && rankings.length > 1 ? count - rankings[1].count : 0);
 
         let replyMessage = sender + "님은 총 " + count + "번의 톡을 하셨습니다!\n(현재 " + rank + "위)";
         if (rank === 1 && rankings.length > 1) {
@@ -142,79 +143,78 @@ function responseFix(room, msg, sender, isGroupChat, replier, imageDB, packageNa
     });
 
     fs.write(path, JSON.stringify(json, null, 4));
-}
 
-if (msg === "!잠수정리") {
-    if (uid === masterUid) {
-        let deletedCount = 0;
-        let inactiveUsers = 0;
-        
-        if (json[room]) {
-            let usersToDelete = [];
-            for (let userUid in json[room]) {
-                let lastMessageDate = null;
-                
-                for (let sender in json[room][userUid]) {
-                    let messages = json[room][userUid][sender];
-                    if (messages.length > 0) {
-                        let lastMsg = messages[messages.length - 1].msg;
-                        let msgDate = lastMsg.match(/\[(\d{4})년 (\d{1,2})월 (\d{1,2})일/);
-                        if (msgDate) {
-                            let messageDate = new Date(msgDate[1], msgDate[2] - 1, msgDate[3]);
-                            if (!lastMessageDate || messageDate > lastMessageDate) {
-                                lastMessageDate = messageDate;
+    if (msg === "!잠수정리") {
+        if (uid === masterUid) {
+            let deletedCount = 0;
+            let inactiveUsers = 0;
+            
+            if (json[room]) {
+                let usersToDelete = [];
+                for (let userUid in json[room]) {
+                    let lastMessageDate = null;
+                    
+                    for (let sender in json[room][userUid]) {
+                        let messages = json[room][userUid][sender];
+                        if (messages.length > 0) {
+                            let lastMsg = messages[messages.length - 1].msg;
+                            let msgDate = lastMsg.match(/\[(\d{4})년 (\d{1,2})월 (\d{1,2})일/);
+                            if (msgDate) {
+                                let messageDate = new Date(msgDate[1], msgDate[2] - 1, msgDate[3]);
+                                if (!lastMessageDate || messageDate > lastMessageDate) {
+                                    lastMessageDate = messageDate;
+                                }
                             }
                         }
                     }
+                    
+                    if (lastMessageDate) {
+                        let diffDays = (today - lastMessageDate) / (1000 * 60 * 60 * 24);
+                        if (diffDays > 3) {  // 3일 이상 inactive로 변경
+                            usersToDelete.push(userUid);
+                            for (let sender in json[room][userUid]) {
+                                deletedCount += json[room][userUid][sender].length;
+                            }
+                            inactiveUsers++;
+                        }
+                    }
                 }
                 
-                if (lastMessageDate) {
-                    let diffDays = (today - lastMessageDate) / (1000 * 60 * 60 * 24);
-                    if (diffDays > 3) {  // 3일 이상 inactive로 변경
-                        usersToDelete.push(userUid);
-                        for (let sender in json[room][userUid]) {
-                            deletedCount += json[room][userUid][sender].length;
-                        }
-                        inactiveUsers++;
+                usersToDelete.forEach(userUid => {
+                    delete json[room][userUid];
+                });
+                
+                fs.write(path, JSON.stringify(json, null, 4));
+                replier.reply("잠수자 정리가 완료되었습니다.\n" +
+                              "총 " + inactiveUsers + "명의 잠수 유저가 발견되었으며,\n" +
+                              deletedCount + "개의 메시지가 삭제되었습니다.");
+            } else {
+                replier.reply("이 방의 채팅 기록이 없습니다.");
+            }
+        } else {
+            replier.reply("관리자만 사용 가능합니다.");
+        }
+    }
+
+    if (msg === "!방초기화") {
+        if (uid === masterUid) {
+            let count = 0;
+            if (json[room]) {
+                for (let userId in json[room]) {
+                    for (let sender in json[room][userId]) {
+                        count += json[room][userId][sender].length;
                     }
                 }
             }
-            
-            usersToDelete.forEach(userUid => {
-                delete json[room][userUid];
-            });
-            
+            json[room] = {};
             fs.write(path, JSON.stringify(json, null, 4));
-            replier.reply("잠수자 정리가 완료되었습니다.\n" +
-                          "총 " + inactiveUsers + "명의 잠수 유저가 발견되었으며,\n" +
-                          deletedCount + "개의 메시지가 삭제되었습니다.");
+            replier.reply(room + "의 대화 내용이 초기화 되었습니다\n총 삭제 : " + formatNumber(count) +" 개의 대화 내용이 삭제되었습니다.");
         } else {
-            replier.reply("이 방의 채팅 기록이 없습니다.");
+            replier.reply("관리자만 사용가능합니다.");
         }
-    } else {
-        replier.reply("관리자만 사용 가능합니다.");
     }
-}
 
-if (msg === "!방초기화") {
-    if (uid === masterUid) {
-        let count = 0;
-        if (json[room]) {
-            for (let userId in json[room]) {
-                for (let sender in json[room][userId]) {
-                    count += json[room][userId][sender].length;
-                }
-            }
-        }
-        json[room] = {};
-        fs.write(path, JSON.stringify(json, null, 4));
-        replier.reply(room + "의 대화 내용이 초기화 되었습니다\n총 삭제 : " + formatNumber(count) +" 개의 대화 내용이 삭제되었습니다.");
-    } else {
-        replier.reply("관리자만 사용가능합니다.");
-    }
-}
-
-if (msg === "!저장해제") {
+    if (msg === "!저장해제") {
         if (uid === masterUid) {
             if (!json.ignoredRooms) {
                 json.ignoredRooms = [];
@@ -229,10 +229,9 @@ if (msg === "!저장해제") {
         } else {
             replier.reply("관리자만 사용 가능합니다.");
         }
-        return;
     }
-    
 }
+
 function onNotificationPosted(sbn, sm) {
     var packageName = sbn.getPackageName();
     if (!packageName.startsWith("com.kakao.tal"))
@@ -264,4 +263,3 @@ function onNotificationPosted(sbn, sm) {
         }
     }
 }
-    
