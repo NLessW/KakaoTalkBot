@@ -79,7 +79,7 @@ function responseFix(room, msg, sender, isGroupChat, replier, imageDB, packageNa
     }
             
     if (msg === "두두") {
-        if (uid === masterUid || uid === dfMasterUid || uid === mainMasterUid || uid === mainMasterUid2 || uid === mainMasterUid3 || uid == roomMaster) {
+        if (uid === masterUid) {
             replier.reply("등장");
             replier.reply("어서오세요. "+sender+"님");
         } else {
@@ -224,7 +224,7 @@ function responseFix(room, msg, sender, isGroupChat, replier, imageDB, packageNa
     }
 
     if (msg === "!방초기화") {
-    if (uid === masterUid || uid===fishroom || uid === roomMaster || sender === "엔리스") {
+    if (uid === masterUid) {
         let count = 0;
         if (json[room]) {
             for (let userId in json[room]) {
@@ -245,7 +245,7 @@ function responseFix(room, msg, sender, isGroupChat, replier, imageDB, packageNa
 }
 
     if (msg === "!저장해제") {
-        if (uid === masterUid || uid === dfMasterUid || uid === mainMasterUid || uid === mainMasterUid2 || uid === roomMaster || uid===fishroom) {
+        if (uid === masterUid) {
             if (!json.ignoredRooms) {
                 json.ignoredRooms = [];
             }
